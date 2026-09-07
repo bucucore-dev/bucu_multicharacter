@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BUCU City — Character Selection</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div id="multichar-app" class="multichar-app hidden">
+        <!-- ─── Top Brand Bar ────────────────────────────────────────────── -->
+        <header class="top-nav-bar">
+            <div class="nav-brand glass-pill">
+                <div class="brand-logo">
+                    <span class="logo-accent">BUCU</span>
+                    <span class="logo-sub">CITY</span>
+                </div>
+                <div class="nav-divider"></div>
+                <span class="nav-tagline" data-i18n="subtitle_select_char">Citizen Directory & Profile Selection</span>
+            </div>
+
+            <div class="nav-status glass-pill">
+                <span class="status-dot"></span>
+                <span class="status-text">BUCU CITY • ONLINE</span>
+            </div>
+        </header>
+
+        <!-- ─── Main Interface ───────────────────────────────────────────── -->
+        <main class="multichar-stage">
+            <!-- Left: Character Slot List -->
+            <aside class="slots-sidebar glass-panel">
+                <div class="sidebar-header">
+                    <div class="header-badge">
+                        <span class="badge-title" data-i18n="title_select_char">CITIZEN PROFILES</span>
+                        <span id="slots-count-chip" class="slots-chip">0 / 4</span>
+                    </div>
+                    <p class="sidebar-desc">Select an active citizen profile or claim an available slot.</p>
+                </div>
+
+                <div id="slots-container" class="slots-list">
+                    <!-- Populated dynamically via JS -->
+                </div>
+            </aside>
+
+            <!-- Center Bottom: 3D Ped Rotation Dock -->
+            <div class="ped-dock glass-pill">
+                <button class="ped-rot-btn" id="btn-rot-left" title="Rotate Left">⟲</button>
+                <span class="ped-rot-label">ROTATE CHARACTER</span>
+                <button class="ped-rot-btn" id="btn-rot-right" title="Rotate Right">⟳</button>
+            </div>
+
+            <!-- Right: Character Dossier & Actions -->
+            <aside class="dossier-panel glass-panel" id="dossier-panel">
+                <!-- State: Existing Character Selected -->
+                <div id="dossier-active" class="dossier-content">
+                    <div class="dossier-header">
+                        <div class="state-seal-wrap">
+                            <div class="character-avatar-frame" id="dossier-avatar-frame" title="Official Biometric Citizen Record">
+                                <img id="dossier-avatar-img" class="dossier-avatar-img" src="images/default_avatar.png" alt="Avatar" />
+                                <div id="dossier-avatar-fallback" class="dossier-avatar-fallback" style="display: none;">BB</div>
+                                <div class="avatar-photo-badge" title="Verified Citizen Record">✓</div>
+                            </div>
+                            <div class="state-meta">
+                                <span class="state-sub">BUCU City Registry</span>
+                                <h2 id="dossier-fullname" class="citizen-name">Arthur Morgan</h2>
+                            </div>
+                        </div>
+                        <span id="dossier-citizenid" class="citizen-chip">#BUCU-0000</span>
+                    </div>
+
+                    <!-- Financials -->
+                    <div class="dossier-section">
+                        <div class="section-title">FINANCIAL OVERVIEW</div>
+                        <div class="finance-grid">
+                            <div class="finance-card">
+                                <span class="fin-lbl" data-i18n="lbl_cash">CASH ON HAND</span>
+                                <span id="dossier-cash" class="fin-val text-green">$0</span>
+                            </div>
+                            <div class="finance-card">
+                                <span class="fin-lbl" data-i18n="lbl_bank">BANK SAVINGS</span>
+                                <span id="dossier-bank" class="fin-val text-green">$0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Personal Records -->
+                    <div class="dossier-section">
+                        <div class="section-title">CIVIL IDENTITY RECORD</div>
+                        <div class="records-grid">
+                            <div class="record-row">
+                                <span class="rec-lbl" data-i18n="lbl_dob">DATE OF BIRTH</span>
+                                <span id="dossier-dob" class="rec-val">1990-01-01</span>
+                            </div>
+                            <div class="record-row">
+                                <span class="rec-lbl" data-i18n="lbl_gender">GENDER</span>
+                                <span id="dossier-gender" class="rec-val">Male</span>
+                            </div>
+                            <div class="record-row">
+                                <span class="rec-lbl" data-i18n="lbl_job">OCCUPATION</span>
+                                <span id="dossier-job" class="rec-val">Unemployed</span>
+                            </div>
+                            <div class="record-row">
+                                <span class="rec-lbl">CONTACT PHONE</span>
+                                <span id="dossier-phone" class="rec-val">555-0100</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Integrated Spawn Locations Selector (Sans-inspired, Bucu Perfected) -->
+                    <div class="dossier-section">
+                        <div class="section-title">LOKASI KEDATANGAN KOTA (PILIH TITIK SPAWN)</div>
+                        <div class="spawn-quick-grid" id="spawn-quick-grid">
+                            <div class="spawn-card-quick active" data-spawn="airport">
+                                <div class="spawn-card-icon">🛫</div>
+                                <div class="spawn-card-meta">
+                                    <div class="spawn-card-title">Bandara Internasional (LSIA)</div>
+                                    <div class="spawn-card-sub">Terminal Kedatangan Warga Udara</div>
+                                </div>
+                                <span class="spawn-card-tag">UDARA</span>
+                            </div>
+                            <div class="spawn-card-quick" data-spawn="harbor">
+                                <div class="spawn-card-icon">⚓</div>
+                                <div class="spawn-card-meta">
+                                    <div class="spawn-card-title">Pelabuhan Los Santos (Docks)</div>
+                                    <div class="spawn-card-sub">Dermaga Kargo & Logistik Laut</div>
+                                </div>
+                                <span class="spawn-card-tag">LAUT</span>
+                            </div>
+                            <div class="spawn-card-quick" data-spawn="train">
+                                <div class="spawn-card-icon">🚆</div>
+                                <div class="spawn-card-meta">
+                                    <div class="spawn-card-title">Stasiun Kereta Api (Central)</div>
+                                    <div class="spawn-card-sub">Pusat Transit Metro Jalur Kota</div>
+                                </div>
+                                <span class="spawn-card-tag">DARAT</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Controls -->
+                    <div class="dossier-actions">
+                        <button id="btn-enter-city" class="btn-play-action">
+                            <span class="btn-icon">▶</span>
+                            <span class="btn-play-text" id="btn-play-text">MASUK KOTA (BANDARA)</span>
+                        </button>
+
+                        <div class="sub-actions">
+                            <button id="btn-delete-char" class="btn-danger-action full-width-danger" title="Hapus Profil Karakter Ini">
+                                <span>🗑️ Hapus Karakter</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- State: Empty Slot Selected -->
+                <div id="dossier-empty" class="dossier-content hidden">
+                    <div class="empty-dossier-inner">
+                        <div class="empty-dossier-icon">✦</div>
+                        <h2 class="empty-dossier-title">Available Citizen Slot</h2>
+                        <p class="empty-dossier-desc">This profile slot is currently unoccupied. Claim this slot to establish a brand-new persona with full facial customization, backstory, and starter equipment in BUCU City.</p>
+
+                        <div class="starter-perks">
+                            <div class="perk-item">
+                                <span class="perk-icon">💳</span>
+                                <div class="perk-info">
+                                    <strong>City Identity & Banking</strong>
+                                    <span>Issued official Citizen ID & $6,000 starter grant</span>
+                                </div>
+                            </div>
+                            <div class="perk-item">
+                                <span class="perk-icon">🎭</span>
+                                <div class="perk-info">
+                                    <strong>3D Appearance Studio</strong>
+                                    <span>Comprehensive DNA heritage, morphs, hair & outfits</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button id="btn-create-profile" class="btn-create-action">
+                            <span>+</span>
+                            <span data-i18n="btn_create_char">CREATE CITIZEN PROFILE</span>
+                        </button>
+                    </div>
+                </div>
+            </aside>
+        </main>
+
+        <!-- ─── Modal: Spawn Location Selector ───────────────────────────── -->
+        <div id="modal-spawn" class="modal-backdrop hidden">
+            <div class="modal-card glass-panel">
+                <div class="modal-header">
+                    <h3 data-i18n="modal_spawn_title">Choose Arrival Location</h3>
+                    <p data-i18n="modal_spawn_subtitle">Select where in BUCU City you want to begin your shift</p>
+                </div>
+                <div class="spawn-list" id="spawn-list-container">
+                    <!-- Populated dynamically via JS -->
+                </div>
+                <div class="modal-actions">
+                    <button id="btn-cancel-spawn" class="btn-secondary">Cancel</button>
+                    <button id="btn-confirm-spawn" class="btn-confirm-modal" data-i18n="btn_confirm_spawn">Confirm Spawn</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ─── Modal: Delete Character Confirmation ─────────────────────── -->
+        <div id="modal-delete" class="modal-backdrop hidden">
+            <div class="modal-card glass-panel danger-card">
+                <div class="modal-header">
+                    <h3 class="danger-title">Delete Citizen Profile?</h3>
+                    <p class="danger-desc">This action is permanent and cannot be undone. All assets, bank balances, vehicles, and progress associated with <strong id="delete-char-name">this citizen</strong> will be removed permanently.</p>
+                </div>
+                <div class="modal-actions">
+                    <button id="btn-cancel-delete" class="btn-secondary">Keep Character</button>
+                    <button id="btn-confirm-delete" class="btn-danger-confirm">Permanently Delete</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ─── Fallback Modal: Citizen Registration (if bucu_identity not present) ─ -->
+        <div id="modal-registration" class="modal-backdrop hidden">
+            <div class="modal-card glass-panel reg-card">
+                <div class="modal-header">
+                    <h3 data-i18n="modal_reg_title">Citizen Registration</h3>
+                    <p data-i18n="modal_reg_subtitle">Fill in civil registry documents</p>
+                </div>
+                <form id="registration-form" class="reg-form" autocomplete="off">
+                    <div class="form-row two-col">
+                        <div class="form-group">
+                            <label data-i18n="field_firstname">First Name</label>
+                            <input type="text" id="reg-firstname" placeholder="Arthur" maxlength="25">
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="field_lastname">Last Name</label>
+                            <input type="text" id="reg-lastname" placeholder="Morgan" maxlength="25">
+                        </div>
+                    </div>
+                    <div class="form-row two-col">
+                        <div class="form-group">
+                            <label data-i18n="field_dob">Birth Date</label>
+                            <input type="date" id="reg-dob" value="1995-01-01">
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="field_gender">Gender</label>
+                            <select id="reg-gender">
+                                <option value="male" data-i18n="gender_male">Male</option>
+                                <option value="female" data-i18n="gender_female">Female</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="reg-error-msg" class="reg-error hidden"></div>
+                    <div class="modal-actions">
+                        <button type="button" id="btn-cancel-reg" class="btn-secondary" data-i18n="btn_cancel">Cancel</button>
+                        <button type="submit" class="btn-confirm-modal" data-i18n="btn_create_char">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
